@@ -3,8 +3,11 @@ const prisma = require("../utils/connection");
 
 const create = async (req, res, next) => {
   try {
-    const { title,  videoname } = req.body;
+    const { title } = req.body;
 
+    const { videoname } = req.files;
+    const videoName1 = `${uuid()}${path.extname(videoname.name)}`;
+    photo.mv(`${process.cwd()}/uploads/${videoName}`);
     // validation
     const schema = Joi.object({
       title: Joi.string().min(6).required(),
@@ -14,7 +17,7 @@ const create = async (req, res, next) => {
     if (error) return res.status(404).json({ message: error.message });
 
     const dars = await prisma.darslar.create({
-      data: { title, videoname },
+      data: { title, videoname: videoName1 },
     });
     res.json({ message: "Success", data: dars });
   } catch (error) {
@@ -26,7 +29,7 @@ const find = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const dars = await prisma.darslar.findUnique({where: { id }});
+    const dars = await prisma.darslar.findUnique({ where: { id } });
 
     if (!dars) {
       return res.status(404).json({ message: "Dars not found" });

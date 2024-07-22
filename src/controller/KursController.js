@@ -1,10 +1,14 @@
 const Joi = require("joi");
 const prisma = require("../utils/connection");
+const path = require("path");
+const fileUpload= require("express-fileupload")
 
 const create = async (req, res, next) => {
   try {
-    const { title, description, photoname } = req.body;
-
+    const { title, description,  } = req.body;
+    const { photoname } = req.files;
+    const imageName = `${uuid()}${path.extname(photoname.name)}`;
+    photo.mv(`${process.cwd()}/uploads/${imageName}`);
     // validation
     const schema = Joi.object({
       title: Joi.string().min(6).required(),
@@ -16,7 +20,7 @@ const create = async (req, res, next) => {
     if (error) return res.status(404).json({ message: error.message });
 
     const kurs = await prisma.kurslar.create({
-      data: { title, description, photoname },
+      data: { title, description, photoname: imageName },
     });
     res.json({ message: "Success", data: kurs });
   } catch (error) {
